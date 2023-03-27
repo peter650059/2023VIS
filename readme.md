@@ -1,9 +1,9 @@
 # Three.js Journey
 
 ## Setup
-Download [Node.js](https://nodejs.org/en/download/).
-Download [yarn](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable).
-Run this followed commands:
+Download [Node.js](https://nodejs.org/en/download/).  <br>
+Download [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable).  <br>
+Run this followed commands:<br>
 
 ``` bash
 # Install dependencies (only the first time)

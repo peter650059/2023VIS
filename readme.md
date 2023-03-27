@@ -2,16 +2,17 @@
 
 ## Setup
 Download [Node.js](https://nodejs.org/en/download/).
+Download [yarn](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable).
 Run this followed commands:
 
 ``` bash
 # Install dependencies (only the first time)
-npm install
+yarn install
 
 # Run the local server at localhost:8080
-npm run dev
+yarn dev
 
 # Build for production in the dist/ directory
-npm run build
+yarn build
 ```
 "# 2023VIS" 

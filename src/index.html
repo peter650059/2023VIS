@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="../static/icons/vr-glasses.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>DTBivt: An Immersive Visual Analytics Toolkit for Brain-Inspired Research</title>
+    <!-- <link rel="stylesheet" type="text/css" href="./style.css"> -->
+</head>
+<style>
+	body{
+		overflow:hidden;
+		background-color:#263238;
+	}
+
+    svg {
+        border: 1px solid orange;
+    }
+
+    .container {
+        display: none;
+    }
+
+    #p1{
+        z-index:101;
+        font-size: 30px;
+        position:absolute;
+        top:5%;
+        left:2%;
+        visibility: hidden; 
+    }
+
+    #legend{
+        width: 100%; /*40%;*/
+        height: 100%;
+        /* z-index:auto; */
+        position:absolute;
+        top:40%;
+        left:32%;
+    }
+
+    #webgl {
+        display: block;
+        position: absolute;
+        top: 0%;
+        bottom: 0%;
+        left: 0%;
+        outline: none;
+        width: 100%;
+        height: 100%;
+        /* z-index:auto; */
+        /* transition: all 0.3s linear; */
+    }
+
+    #station {
+        /* z-index:101; */
+        width: 100%; /*40%;*/
+        height: 100%;
+        left: 0%; /*40%;*/
+        top: 0%;
+        /* border: 3px solid rgb(196, 196, 196);
+            border-radius: 5%;
+            border-style: inset; */
+        background-color: white;
+        position: absolute;
+        overflow-y: hidden;
+        overflow-x: hidden;
+        /* z-index:auto; */
+    }
+
+    #option {
+    position: absolute;
+    padding: 12px 6px;
+    border: 1px solid rgb(255, 255, 255);
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.1);
+    color: rgb(255, 255, 255);
+    font: 13px sans-serif;
+    text-align: center;
+    opacity: 0.5;
+    outline: none;
+    z-index: 999;
+    bottom: 10px;
+    cursor: pointer;
+    left: calc(93%);
+    width: 100px;
+}
+
+#option:hover{
+    opacity: 1;
+}
+
+</style>
+
+<body>
+
+<div id="station">
+    <p id='p1' style="color:white">
+        timepoint:1
+    </p>
+
+    <canvas id="webgl"></canvas>
+    
+    <button id="option">First Person</button>
+
+    <div id="legend">
+        <!-- <svg id="legend1"></svg> -->
+    <div>
+
+    <div class="container"></div>
+</div>
+
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <!-- <script type="text/javascript" src="./js/build/datguivr.js"></script> -->
+
+
+</body>
+</html>
+

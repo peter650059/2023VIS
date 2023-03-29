@@ -394,13 +394,13 @@ var params = {
   },
 
   planeY: {
-    constant: 5,
+    constant: 5.5,
     negated: false,
     displayHelper: false,
   },
 
   planeZ: {
-    constant: -1.5,
+    constant: -3.5,
     negated: false,
     displayHelper: false,
   },
@@ -530,10 +530,10 @@ function init() {
     0.1,
     500
   );
-  camera.position.set(0, 0, 7.5);
+  camera.position.set(0, 2, 5.5);
   // camera.rotateX = 90 * Math.PI / 180
   camera.name = "camera";
-  camera.lookAt(0, -0.5, -5.5);
+  camera.lookAt(0, -1.5, -7.5);
   scene.add(camera);
 
   //////////////////////////////////////////////////////
@@ -641,7 +641,7 @@ function init() {
 
   orbit_control = new OrbitControls(camera, canvas);
   // controls.target = new THREE.Vector3(0, 0, -7);
-  orbit_control.target.set(0, -0.5, -5.5);
+  orbit_control.target.set(0, 1.5, -7.5);
   // controls.update();
 
   controls = new PointerLockControls(camera, canvas);
@@ -656,8 +656,8 @@ function init() {
 
   statsMesh = new HTMLMesh(stats.dom);
   statsMesh.position.x = -2.8;
-  statsMesh.position.y = 3;
-  statsMesh.position.z = -7;
+  statsMesh.position.y = 5;
+  statsMesh.position.z = -9;
   // statsMesh.rotation.y = Math.PI / 8;
   statsMesh.scale.setScalar(20);
   group.add(statsMesh);
@@ -677,7 +677,7 @@ function init() {
   // GUI
   var gui = new GUI();
 
-  var folder1 = gui.addFolder("Colormap Update");
+  var folder1 = gui.addFolder("Overview Animation");
 
   folder1
     .add(params, "timepoint")
@@ -781,8 +781,8 @@ function init() {
   folder3
     .add(params.planeY, "constant")
     .name("Horizontal Plane")
-    .min(-3)
-    .max(3.5)
+    .min(-1)
+    .max(5.5)
     .onChange(function (d) {
       if (scene.getObjectByName("brain_obj")) planes[1].constant = d;
     });
@@ -790,8 +790,8 @@ function init() {
   folder3
     .add(params.planeZ, "constant")
     .name("Coronal Plane")
-    .min(-10.5)
-    .max(-1.5)
+    .min(-12.5)
+    .max(-3.5)
     .onChange(function (d) {
       if (scene.getObjectByName("brain_obj")) planes[2].constant = d;
     });
@@ -800,12 +800,12 @@ function init() {
 
   folder3.open();
 
-  // gui.domElement.style.visibility = "hidden";
+  gui.domElement.style.visibility = "hidden";
 
   const mesh = new HTMLMesh(gui.domElement);
   mesh.position.x = -6;
-  mesh.position.y = -0.8;
-  mesh.position.z = -5.5;
+  mesh.position.y = 1.2;
+  mesh.position.z = -6.5;
   mesh.rotation.y = Math.PI / 8;
   mesh.scale.set(18, 25, 18);
   group.add(mesh);
@@ -1098,8 +1098,8 @@ function buildControllers() {
 
   scene.add(vrControl.controllerGrips[0], vrControl.controllers[0]);
   scene.add(vrControl.controllerGrips[1], vrControl.controllers[1]);
-  controllers.push(vrControl.controllers[1]);
   controllers.push(vrControl.controllers[0]);
+  controllers.push(vrControl.controllers[1]);
 
   return controllers;
 }
@@ -1189,6 +1189,7 @@ function handleController(controller, hand, dt) {
   const raycaster = new THREE.Raycaster();
   raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
   raycaster.ray.direction.set(0, 0, -1).applyMatrix4(rotationMatrix);
+
   let points = scene.getObjectByName("points_base");
   let highlightmesh = scene.getObjectByName("highlightmesh");
   let meshgroup = scene.getObjectByName("meshgroup");
@@ -1197,73 +1198,196 @@ function handleController(controller, hand, dt) {
   let dolly = scene.getObjectByName("dolly");
   let dummyCam = camera.getObjectByName("dummyCam");
 
-  let intersects = [];
   if (points) {
-    intersects = raycaster.intersectObjects(points.children);
-    // console.log(intersects)
-  }
+    var intersects_points = [];
+    if (points) {
+      intersects_points = raycaster.intersectObjects(points.children);
+    }
 
-  const color = new THREE.Color();
+    if (intersects_points.length > 0) {
+      let id = intersects_points[0].object.name;
+      let data = pickingData[id];
+      highlightmesh.position.copy(data.position);
+      highlightmesh.geometry = new THREE.ExtrudeGeometry(data.shape, {
+        steps: 2,
+        depth: 16,
+        // bevelSize: 50,
+        bevelOffset: 80,
+      });
+      highlightmesh.material = new THREE.MeshStandardMaterial({
+        color: data.color,
+      });
+      if (scene.getObjectByName("highlightmesh")) {
+        highlightmesh.visible = true;
+      }
+      document.body.style.cursor = "pointer";
+    } else {
+      if (scene.getObjectByName("highlightmesh")) {
+        highlightmesh.visible = false;
+      }
+      document.body.style.cursor = "default";
+    }
+  }
 
   // console.log(controller.userData.selectPressed)
   // console.log(controller.userData.squeezePressed)
 
-  if (intersects.length > 0) {
-    let id = intersects[0].object.name;
-    let data = pickingData[id];
-
-    highlightmesh.position.copy(data.position);
-    highlightmesh.geometry = new THREE.ExtrudeGeometry(data.shape, {
-      steps: 2,
-      depth: 16,
-      // bevelSize: 50,
-      bevelOffset: 80,
-    });
-    highlightmesh.material = new THREE.MeshStandardMaterial({
-      color: data.color,
-    });
-    if (points) highlightmesh.visible = true;
-    // console.log(highlightmesh)
-    // document.body.style.cursor = "pointer";
-  } else {
-    if (points) highlightmesh.visible = false;
-    // document.body.style.cursor = "default";
-  }
-
   if (controller.userData.squeezePressed) {
-    if (intersects.length > 0) {
-      let selectedObject = intersects[0].object;
-      let click_name = selectedObject.name;
-      let value = selectedObject.value;
-      let coord = selectedObject.coord;
-      let region = selectedObject.region;
-      let meanbold = selectedObject.meanbold;
+    if (points) {
+      var intersects_points = [];
+      if (points) {
+        intersects_points = raycaster.intersectObjects(points.children);
+      }
 
-      const pointGeom = new THREE.SphereGeometry(2.5, 30, 30);
-      const pointMat = new THREE.MeshPhongMaterial({ color: "red" });
-      const point = new THREE.Mesh(pointGeom, pointMat);
-      point.layers.enable(1);
-      point.position.set(coord[0], coord[1], coord[2]);
+      let highlightmesh = scene.getObjectByName("highlightmesh");
 
-      if (all_voxel_index.includes(click_name)) {
-        let index = all_voxel_index.indexOf(click_name);
-        all_voxel_index.splice(index, 1);
-        pointGroup.children.splice(index, 1);
-        console.log("remove a voxel");
-      } else {
-        all_voxel_index.push(click_name);
-        pointGroup.add(point);
-        pointGroup.rotation.x = Math.PI / 2;
-        pointGroup.rotation.y = Math.PI;
-        // pointGroup.scale.set(0.04,0.04,0.04);
-        // pointGroup.position.set(0,-0.7,0.7);
-        pointGroup.position.set(0, -0.5, -5.5);
-        pointGroup.scale.set(0.05, 0.048, 0.046);
-        scene.add(pointGroup);
-        console.log("add a voxel");
+      if (intersects_points.length > 0) {
+        let click_name = intersects_points[0].object.name;
+        let value = intersects_points[0].object.value;
+        let coord = intersects_points[0].object.coord;
+        let region = intersects_points[0].object.region;
+        let meanbold = intersects_points[0].object.meanbold;
+
+        userText.set({
+          content:
+            "Point Label:  " +
+            String(click_name) +
+            "\n" +
+            "Region: " +
+            String(region) +
+            "\n" +
+            " MeanBold: " +
+            String(meanbold),
+          fontColor: new THREE.Color(d3.interpolateSinebow(0.3)),
+        });
+
+        // const pointGeom = new THREE.IcosahedronGeometry( 2, 15 );
+        // const pointMat = new THREE.MeshBasicMaterial( { color: 'red' } );
+        const pointGeom = new THREE.SphereGeometry(3.5, 30, 30);
+        const pointMat = new THREE.MeshPhongMaterial({ color: "red" });
+        const point = new THREE.Mesh(pointGeom, pointMat);
+        // point.layers.enable(1);
+        if (coord) {
+          point.position.set(coord[0], coord[1], coord[2]);
+        }
+        // pointGroup.add(point);
+
+        // scene.add(pointGroup);
+
+        if (all_voxel_index.includes(click_name)) {
+          let index = all_voxel_index.indexOf(click_name);
+          all_voxel_index.splice(index, 1);
+          pointGroup.children.splice(index, 1);
+          console.log("remove a voxel");
+        } else {
+          all_voxel_index.push(click_name);
+          pointGroup.add(point);
+          pointGroup.rotation.x = Math.PI / 2;
+          pointGroup.rotation.y = Math.PI;
+          // pointGroup.scale.set(0.04,0.04,0.04);
+          // pointGroup.position.set(0,-0.7,0.7);
+          pointGroup.position.set(0, 1.5, -7.5);
+          pointGroup.scale.set(0.05, 0.048, 0.046);
+          scene.add(pointGroup);
+          pointGroup.name = "key_point";
+          console.log("add a voxel");
+        }
+      }
+    }
+    if (points & regionbold_mode) {
+      var intersects_points = raycaster.intersectObjects(points.children);
+
+      if (intersects_points.length > 0) {
+        let click_name = intersects_points[0].object.name;
+        let value = intersects_points[0].object.value;
+        let coord = intersects_points[0].object.coord;
+        let region = intersects_points[0].object.region;
+        let meanbold = intersects_points[0].object.meanbold;
+
+        const RegionData = select_from_region(allData, click_name);
+        // console.log(RegionData);
+        templength = RegionData.length;
+
+        userText.set({
+          content:
+            "Region: " +
+            String(click_name) +
+            "\n" +
+            "Total " +
+            String(templength) +
+            " Points" +
+            "\n" +
+            "MeanBold: " +
+            String(meanbold),
+          fontColor: new THREE.Color(d3.interpolateSinebow(0.3)),
+        });
+
+        display_region(RegionData);
+      }
+    }
+
+    if (meshgroup) {
+      var meshgroup_intersect = scene.getObjectByName("meshgroup");
+      // console.log(meshgroup)
+
+      var intersects_points = raycaster.intersectObjects(
+        meshgroup_intersect.children
+      );
+
+      if (intersects_points.length > 0) {
+        let click_name = intersects_points[0].object.name;
+        let coord = intersects_points[0].object.coord;
+        let value = intersects_points[0].object.value;
+        let region = intersects_points[0].object.region;
+
+        userText.set({
+          content:
+            "Point Label:  " +
+            String(click_name) +
+            "\n" +
+            "Region: " +
+            String(region) +
+            "\n" +
+            "Bold at timepoint " +
+            String(timepoint + 1) +
+            ": " +
+            String(value),
+          fontColor: new THREE.Color(d3.interpolateSinebow(0.3)),
+        });
+
+        const pointGeom = new THREE.SphereGeometry(3.5, 30, 30);
+        const pointMat = new THREE.MeshPhongMaterial({ color: "red" });
+        const point = new THREE.Mesh(pointGeom, pointMat);
+        if (coord) {
+          point.position.set(coord[0], coord[1], coord[2]);
+        }
+        if (all_voxel_index.includes(click_name)) {
+          let index = all_voxel_index.indexOf(click_name);
+          all_voxel_index.splice(index, 1);
+          pointGroup.children.splice(index, 1);
+          console.log("remove a voxel");
+        } else {
+          all_voxel_index.push(click_name);
+          pointGroup.add(point);
+          pointGroup.rotation.x = Math.PI / 2;
+          pointGroup.rotation.y = Math.PI;
+          // pointGroup.scale.set(0.04,0.04,0.04);
+          // pointGroup.position.set(0,-0.7,0.7);
+          pointGroup.position.set(0, 1.5, -7.5);
+          pointGroup.scale.set(0.05, 0.048, 0.046);
+          scene.add(pointGroup);
+          pointGroup.name = "key_point";
+          console.log("add a voxel");
+        }
       }
     }
   }
+
+  // if (!controller.userData.squeezePressed) {
+  //   document.removeEventListener("click", clickhighlightmesh, false);
+  //   document.removeEventListener("click", clickhighlightmesh_region, false);
+  //   document.removeEventListener("click", clickhighlightmeshgroup, false);
+  // }
 
   if (hand) {
     if (controller.userData.squeezePressed) {
@@ -1284,6 +1408,25 @@ function handleController(controller, hand, dt) {
       dolly.position.y = 0;
       dolly.quaternion.copy(quaternion);
     }
+
+    // if (controller.userData.selectrPressed) {
+    //   let pos = dolly.position.clone();
+    //   pos.y += 1;
+
+    //   const speed = 1;
+    //   const quaternion = dolly.quaternion.clone();
+    //   const target = new THREE.Quaternion();
+    //   dummyCam.getWorldQuaternion(target);
+    //   dolly.quaternion.copy(target);
+
+    //   const workingVector = new THREE.Vector3();
+    //   dolly.getWorldDirection(workingVector);
+    //   workingVector.negate();
+
+    //   dolly.translateZ(-dt * speed);
+    //   dolly.position.y = 0;
+    //   dolly.quaternion.copy(quaternion);
+    // }
   }
 }
 
@@ -1443,7 +1586,7 @@ function makePanel() {
 
 function makeUI() {
   const container = new THREE.Group();
-  container.position.set(0, 4.78, -7);
+  container.position.set(0, 6.78, -9);
   container.scale.set(7.2, 9, 7);
   // container.rotation.x = -0.15;
   scene.add(container);
@@ -1795,7 +1938,7 @@ function makeTextPanel() {
     backgroundOpacity: 1,
   });
 
-  container.position.set(-6, 4.8, -5.5);
+  container.position.set(-6, 6.8, -6.5);
   container.scale.setScalar(7);
   container.rotation.y = Math.PI / 8;
   scene.add(container);
@@ -2781,7 +2924,7 @@ function slice_render3dChart(Data) {
 
     meshgroup.scale.setScalar(0.25);
     meshgroup.rotateY(-Math.PI / 2);
-    meshgroup.position.set(12, -8, -5);
+    meshgroup.position.set(12, -8, -3.5);
     scene.add(meshgroup);
     meshgroup.name = "meshgroup";
     world_Coord_meshgroup = [];
@@ -2967,8 +3110,9 @@ function hoverhighlightmesh(event) {
     highlightmesh.material = new THREE.MeshStandardMaterial({
       color: data.color,
     });
-
-    highlightmesh.visible = true;
+    if (scene.getObjectByName("highlightmesh")) {
+      highlightmesh.visible = true;
+    }
     document.body.style.cursor = "pointer";
   } else {
     if (scene.getObjectByName("highlightmesh")) {
@@ -3033,7 +3177,9 @@ function clickhighlightmesh(event) {
     const pointMat = new THREE.MeshPhongMaterial({ color: "red" });
     const point = new THREE.Mesh(pointGeom, pointMat);
     // point.layers.enable(1);
-    point.position.set(coord[0], coord[1], coord[2]);
+    if (coord) {
+      point.position.set(coord[0], coord[1], coord[2]);
+    }
     // pointGroup.add(point);
 
     // scene.add(pointGroup);
@@ -3050,7 +3196,7 @@ function clickhighlightmesh(event) {
       pointGroup.rotation.y = Math.PI;
       // pointGroup.scale.set(0.04,0.04,0.04);
       // pointGroup.position.set(0,-0.7,0.7);
-      pointGroup.position.set(0, -0.5, -5.5);
+      pointGroup.position.set(0, 1.5, -7.5);
       pointGroup.scale.set(0.05, 0.048, 0.046);
       scene.add(pointGroup);
       pointGroup.name = "key_point";
@@ -3238,7 +3384,7 @@ function clickhighlightmeshgroup(event) {
       pointGroup.rotation.y = Math.PI;
       // pointGroup.scale.set(0.04,0.04,0.04);
       // pointGroup.position.set(0,-0.7,0.7);
-      pointGroup.position.set(0, -0.5, -5.5);
+      pointGroup.position.set(0, 1.5, -7.5);
       pointGroup.scale.set(0.05, 0.048, 0.046);
       scene.add(pointGroup);
       pointGroup.name = "key_point";
@@ -3315,7 +3461,7 @@ function initpolygen() {
       brainmodel = new THREE.Mesh(geometry, material);
 
       brainmodel.rotation.set(Math.PI / 2, Math.PI, 0);
-      brainmodel.position.set(0, -0.5, -5.5);
+      brainmodel.position.set(0, 1.5, -7.5);
       brainmodel.scale.set(0.05, 0.05, 0.05);
       scene.add(brainmodel);
       brainmodel.name = "brainmodel";
@@ -3353,8 +3499,8 @@ function initBrainObj() {
   // slicing plane
   planes = [
     new THREE.Plane(new THREE.Vector3(-1, 0, 0), 3.5),
-    new THREE.Plane(new THREE.Vector3(0, -1, 0), 3.5),
-    new THREE.Plane(new THREE.Vector3(0, 0, -1), -1.5),
+    new THREE.Plane(new THREE.Vector3(0, -1, 0), 5.5),
+    new THREE.Plane(new THREE.Vector3(0, 0, -1), -3.5),
   ];
 
   planeHelpers = planes.map((p) => new THREE.PlaneHelper(p, 8, 0xffffff));
@@ -3372,7 +3518,7 @@ function initBrainObj() {
 
   object = new THREE.Group();
   object.rotation.set(Math.PI / 2, Math.PI, 0);
-  object.position.set(0, 0.13, -6.215);
+  object.position.set(0, 2.13, -8.215);
   scene.add(object);
   object.name = "brain_obj";
   planeObjects = [];
@@ -4372,7 +4518,7 @@ function colorscale() {
 // pointmesh.position.set(0,0,-7);
 // scene.add(pointmesh)
 
-// // // adjust the position of the coord point and brain4 model
+// // adjust the position of the coord point and brain4 model
 // coord.forEach( (d) => {
 //   const pointGeom = new THREE.SphereGeometry(1,30,30);
 //   const pointMat = new THREE.MeshPhongMaterial({color: 'red'});
@@ -4383,10 +4529,9 @@ function colorscale() {
 //   pointGroup.rotation.y = Math.PI;
 //   pointGroup.scale.set(0.05,0.048,0.046);
 //   // pointGroup.scale.set(0.039,0.039,0.036);
-//   pointGroup.position.set(0, -0.5, -5.5);
+//   pointGroup.position.set(-0.1, 1.5, -7.5);
 
 // })
-// scene.add(pointGroup)
 
 // // // get the world position of each coord
 // let world_Coord = [];
@@ -4423,7 +4568,7 @@ function display_region(RegionData) {
   // regiongroup.scale.set(0.039,0.039,0.038);
   // regiongroup.position.set(0,-0.7,0.7);
   regiongroup.scale.set(0.05, 0.048, 0.046);
-  regiongroup.position.set(0, -0.5, -5.5);
+  regiongroup.position.set(0, 1.5, -7.5);
   scene.add(regiongroup);
   regiongroup.name = "regiongroup";
 }
@@ -4472,7 +4617,7 @@ function display_region_colormap(RegionData) {
   // regiongroup.scale.set(0.039,0.039,0.038);
   // regiongroup.position.set(0,-0.7,0.7);
   regiongroup.scale.set(0.05, 0.048, 0.046);
-  regiongroup.position.set(0, -0.5, -5.5);
+  regiongroup.position.set(0, 1.5, -7.5);
   scene.add(regiongroup);
   regiongroup.name = "regiongroup";
 
@@ -4542,7 +4687,7 @@ function makeplaymenu() {
     width: PLAYERPANELMAXWIDTH,
   });
 
-  playMenuContainer.position.set(0, -5, -6);
+  playMenuContainer.position.set(0, -3, -8);
   playMenuContainer.scale.set(2.15, 3, 2.15);
   scene.add(playMenuContainer);
 
@@ -5200,7 +5345,7 @@ function makeplaymenu() {
         pointGroup.rotation.y = Math.PI;
         // pointGroup.scale.set(0.04,0.04,0.04);
         // pointGroup.position.set(0,-0.7,0.7);
-        pointGroup.position.set(0, -0.5, -5.5);
+        pointGroup.position.set(0, 1.5, -7.5);
         pointGroup.scale.set(0.05, 0.048, 0.046);
         scene.add(pointGroup);
         pointGroup.name = "key_point";
@@ -5462,7 +5607,7 @@ function time_sum_bold(data) {
 
   let planes = [
     new THREE.Plane(new THREE.Vector3(-1, 0, 0), 10),
-    new THREE.Plane(new THREE.Vector3(0, 1, 0), 4.3),
+    new THREE.Plane(new THREE.Vector3(0, 1, 0), 2.3),
     new THREE.Plane(new THREE.Vector3(0, 0, -1), 10),
   ];
 
@@ -5483,7 +5628,7 @@ function time_sum_bold(data) {
   const clippedColorFront = new THREE.Mesh(geometry2, cubeMaterial);
   clippedColorFront.scale.set(0.01075, 0.01075, 0.01075);
   clippedColorFront.rotation.set(0, Math.PI, Math.PI);
-  clippedColorFront.position.set(0, -3, -6);
+  clippedColorFront.position.set(0, -1, -8);
   clippedColorFront.translateX(-3.55);
   clippedColorFront.castShadow = true;
   clippedColorFront.renderOrder = 6;

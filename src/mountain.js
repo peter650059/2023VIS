@@ -400,7 +400,7 @@ var params = {
   },
 
   planeZ: {
-    constant: -3.5,
+    constant: -5.5,
     negated: false,
     displayHelper: false,
   },
@@ -641,7 +641,7 @@ function init() {
 
   orbit_control = new OrbitControls(camera, canvas);
   // controls.target = new THREE.Vector3(0, 0, -7);
-  orbit_control.target.set(0, 1.5, -7.5);
+  orbit_control.target.set(0, 1.5, -9.5);
   // controls.update();
 
   controls = new PointerLockControls(camera, canvas);
@@ -657,7 +657,7 @@ function init() {
   statsMesh = new HTMLMesh(stats.dom);
   statsMesh.position.x = -2.8;
   statsMesh.position.y = 5;
-  statsMesh.position.z = -9;
+  statsMesh.position.z = -11;
   // statsMesh.rotation.y = Math.PI / 8;
   statsMesh.scale.setScalar(20);
   group.add(statsMesh);
@@ -790,8 +790,8 @@ function init() {
   folder3
     .add(params.planeZ, "constant")
     .name("Coronal Plane")
-    .min(-12.5)
-    .max(-3.5)
+    .min(-14.5)
+    .max(-5.5)
     .onChange(function (d) {
       if (scene.getObjectByName("brain_obj")) planes[2].constant = d;
     });
@@ -805,7 +805,7 @@ function init() {
   const mesh = new HTMLMesh(gui.domElement);
   mesh.position.x = -6;
   mesh.position.y = 1.2;
-  mesh.position.z = -6.5;
+  mesh.position.z = -8.5;
   mesh.rotation.y = Math.PI / 8;
   mesh.scale.set(18, 25, 18);
   group.add(mesh);
@@ -1163,21 +1163,22 @@ vrbutton_click.addEventListener(
   "click",
   function (event) {
     vr_mode = true;
-    // let user = new THREE.Group();
-    // user.add(camera);
-    // // user.add(controllers[0].children[0]);
-    // // user.add(controllers[0].children[1]);
-    // // user.add(controllers[1].children[0]);
-    // // user.add(controllers[1].children[1]);
-    // user.position.set(0, 0, 0);
-    // scene.add(user);
-    // console.log(camera.posiiton);
-    // console.log(controllers);
 
     camera.position.set(0, 0, 0);
     let dummyCam = new THREE.Object3D();
     camera.add(dummyCam);
     dummyCam.name = "dummyCam";
+
+    // let user = new THREE.Group();
+    // user.add(camera);
+    // user.add(controllers[0]);
+    // // user.add(controllers[0].children[1]);
+    // user.add(controllers[1]);
+    // // user.add(controllers[1].children[1]);
+    // user.position.set(0, 0, 0);
+    // scene.add(user);
+    // console.log(camera.posiiton);
+    // console.log(controllers);
   },
   false
 );
@@ -1233,68 +1234,68 @@ function handleController(controller, hand, dt) {
   // console.log(controller.userData.squeezePressed)
 
   if (controller.userData.squeezePressed) {
+    // if (points) {
+    //   var intersects_points = [];
+    //   if (points) {
+    //     intersects_points = raycaster.intersectObjects(points.children);
+    //   }
+
+    //   let highlightmesh = scene.getObjectByName("highlightmesh");
+
+    //   if (intersects_points.length > 0) {
+    //     let click_name = intersects_points[0].object.name;
+    //     let value = intersects_points[0].object.value;
+    //     let coord = intersects_points[0].object.coord;
+    //     let region = intersects_points[0].object.region;
+    //     let meanbold = intersects_points[0].object.meanbold;
+
+    //     userText.set({
+    //       content:
+    //         "Point Label:  " +
+    //         String(click_name) +
+    //         "\n" +
+    //         "Region: " +
+    //         String(region) +
+    //         "\n" +
+    //         " MeanBold: " +
+    //         String(meanbold),
+    //       fontColor: new THREE.Color(d3.interpolateSinebow(0.3)),
+    //     });
+
+    //     // const pointGeom = new THREE.IcosahedronGeometry( 2, 15 );
+    //     // const pointMat = new THREE.MeshBasicMaterial( { color: 'red' } );
+    //     const pointGeom = new THREE.SphereGeometry(3.5, 30, 30);
+    //     const pointMat = new THREE.MeshPhongMaterial({ color: "red" });
+    //     const point = new THREE.Mesh(pointGeom, pointMat);
+    //     // point.layers.enable(1);
+    //     if (coord) {
+    //       point.position.set(coord[0], coord[1], coord[2]);
+    //     }
+    //     // pointGroup.add(point);
+
+    //     // scene.add(pointGroup);
+
+    //     if (all_voxel_index.includes(click_name)) {
+    //       let index = all_voxel_index.indexOf(click_name);
+    //       all_voxel_index.splice(index, 1);
+    //       pointGroup.children.splice(index, 1);
+    //       console.log("remove a voxel");
+    //     } else {
+    //       all_voxel_index.push(click_name);
+    //       pointGroup.add(point);
+    //       pointGroup.rotation.x = Math.PI / 2;
+    //       pointGroup.rotation.y = Math.PI;
+    //       // pointGroup.scale.set(0.04,0.04,0.04);
+    //       // pointGroup.position.set(0,-0.7,0.7);
+    //       pointGroup.position.set(0, 1.5, -9.5);
+    //       pointGroup.scale.set(0.05, 0.048, 0.046);
+    //       scene.add(pointGroup);
+    //       pointGroup.name = "key_point";
+    //       console.log("add a voxel");
+    //     }
+    //   }
+    // }
     if (points) {
-      var intersects_points = [];
-      if (points) {
-        intersects_points = raycaster.intersectObjects(points.children);
-      }
-
-      let highlightmesh = scene.getObjectByName("highlightmesh");
-
-      if (intersects_points.length > 0) {
-        let click_name = intersects_points[0].object.name;
-        let value = intersects_points[0].object.value;
-        let coord = intersects_points[0].object.coord;
-        let region = intersects_points[0].object.region;
-        let meanbold = intersects_points[0].object.meanbold;
-
-        userText.set({
-          content:
-            "Point Label:  " +
-            String(click_name) +
-            "\n" +
-            "Region: " +
-            String(region) +
-            "\n" +
-            " MeanBold: " +
-            String(meanbold),
-          fontColor: new THREE.Color(d3.interpolateSinebow(0.3)),
-        });
-
-        // const pointGeom = new THREE.IcosahedronGeometry( 2, 15 );
-        // const pointMat = new THREE.MeshBasicMaterial( { color: 'red' } );
-        const pointGeom = new THREE.SphereGeometry(3.5, 30, 30);
-        const pointMat = new THREE.MeshPhongMaterial({ color: "red" });
-        const point = new THREE.Mesh(pointGeom, pointMat);
-        // point.layers.enable(1);
-        if (coord) {
-          point.position.set(coord[0], coord[1], coord[2]);
-        }
-        // pointGroup.add(point);
-
-        // scene.add(pointGroup);
-
-        if (all_voxel_index.includes(click_name)) {
-          let index = all_voxel_index.indexOf(click_name);
-          all_voxel_index.splice(index, 1);
-          pointGroup.children.splice(index, 1);
-          console.log("remove a voxel");
-        } else {
-          all_voxel_index.push(click_name);
-          pointGroup.add(point);
-          pointGroup.rotation.x = Math.PI / 2;
-          pointGroup.rotation.y = Math.PI;
-          // pointGroup.scale.set(0.04,0.04,0.04);
-          // pointGroup.position.set(0,-0.7,0.7);
-          pointGroup.position.set(0, 1.5, -7.5);
-          pointGroup.scale.set(0.05, 0.048, 0.046);
-          scene.add(pointGroup);
-          pointGroup.name = "key_point";
-          console.log("add a voxel");
-        }
-      }
-    }
-    if (points & regionbold_mode) {
       var intersects_points = raycaster.intersectObjects(points.children);
 
       if (intersects_points.length > 0) {
@@ -1373,7 +1374,7 @@ function handleController(controller, hand, dt) {
           pointGroup.rotation.y = Math.PI;
           // pointGroup.scale.set(0.04,0.04,0.04);
           // pointGroup.position.set(0,-0.7,0.7);
-          pointGroup.position.set(0, 1.5, -7.5);
+          pointGroup.position.set(0, 1.5, -9.5);
           pointGroup.scale.set(0.05, 0.048, 0.046);
           scene.add(pointGroup);
           pointGroup.name = "key_point";
@@ -1394,7 +1395,7 @@ function handleController(controller, hand, dt) {
       let pos = dolly.position.clone();
       pos.y += 1;
 
-      const speed = 1;
+      const speed = 2;
       const quaternion = dolly.quaternion.clone();
       const target = new THREE.Quaternion();
       dummyCam.getWorldQuaternion(target);
@@ -1586,7 +1587,7 @@ function makePanel() {
 
 function makeUI() {
   const container = new THREE.Group();
-  container.position.set(0, 6.78, -9);
+  container.position.set(0, 6.78, -11);
   container.scale.set(7.2, 9, 7);
   // container.rotation.x = -0.15;
   scene.add(container);
@@ -1938,7 +1939,7 @@ function makeTextPanel() {
     backgroundOpacity: 1,
   });
 
-  container.position.set(-6, 6.8, -6.5);
+  container.position.set(-6, 6.8, -8.5);
   container.scale.setScalar(7);
   container.rotation.y = Math.PI / 8;
   scene.add(container);
@@ -2027,8 +2028,8 @@ function animate() {
   // // vrcontrollers
   if (vr_mode) {
     if (controllers) {
-      handleController(controllers[0], true, delta);
-      handleController(controllers[1], false, delta);
+      handleController(controllers[1], true, delta);
+      handleController(controllers[0], false, delta);
     }
   }
 
@@ -2716,7 +2717,7 @@ function render3dChart(RegionData) {
     let mesh = new THREE.Mesh(geometry2, cubeMaterial);
     mesh.scale.set(0.01, 0.01, 0.01);
     mesh.rotation.set(0, Math.PI, Math.PI);
-    mesh.position.set(5, -2, -7 - i / 3);
+    mesh.position.set(5, 0, -11 - i / 3);
     if (RegionData[i].Coord) {
       mesh.coord = RegionData[i].Coord;
     }
@@ -2924,7 +2925,7 @@ function slice_render3dChart(Data) {
 
     meshgroup.scale.setScalar(0.25);
     meshgroup.rotateY(-Math.PI / 2);
-    meshgroup.position.set(12, -8, -3.5);
+    meshgroup.position.set(12, -4, -9.5);
     scene.add(meshgroup);
     meshgroup.name = "meshgroup";
     world_Coord_meshgroup = [];
@@ -3196,7 +3197,7 @@ function clickhighlightmesh(event) {
       pointGroup.rotation.y = Math.PI;
       // pointGroup.scale.set(0.04,0.04,0.04);
       // pointGroup.position.set(0,-0.7,0.7);
-      pointGroup.position.set(0, 1.5, -7.5);
+      pointGroup.position.set(0, 1.5, -9.5);
       pointGroup.scale.set(0.05, 0.048, 0.046);
       scene.add(pointGroup);
       pointGroup.name = "key_point";
@@ -3384,7 +3385,7 @@ function clickhighlightmeshgroup(event) {
       pointGroup.rotation.y = Math.PI;
       // pointGroup.scale.set(0.04,0.04,0.04);
       // pointGroup.position.set(0,-0.7,0.7);
-      pointGroup.position.set(0, 1.5, -7.5);
+      pointGroup.position.set(0, 1.5, -9.5);
       pointGroup.scale.set(0.05, 0.048, 0.046);
       scene.add(pointGroup);
       pointGroup.name = "key_point";
@@ -3461,7 +3462,7 @@ function initpolygen() {
       brainmodel = new THREE.Mesh(geometry, material);
 
       brainmodel.rotation.set(Math.PI / 2, Math.PI, 0);
-      brainmodel.position.set(0, 1.5, -7.5);
+      brainmodel.position.set(0, 1.5, -9.5);
       brainmodel.scale.set(0.05, 0.05, 0.05);
       scene.add(brainmodel);
       brainmodel.name = "brainmodel";
@@ -3500,7 +3501,7 @@ function initBrainObj() {
   planes = [
     new THREE.Plane(new THREE.Vector3(-1, 0, 0), 3.5),
     new THREE.Plane(new THREE.Vector3(0, -1, 0), 5.5),
-    new THREE.Plane(new THREE.Vector3(0, 0, -1), -3.5),
+    new THREE.Plane(new THREE.Vector3(0, 0, -1), -5.5),
   ];
 
   planeHelpers = planes.map((p) => new THREE.PlaneHelper(p, 8, 0xffffff));
@@ -3518,7 +3519,7 @@ function initBrainObj() {
 
   object = new THREE.Group();
   object.rotation.set(Math.PI / 2, Math.PI, 0);
-  object.position.set(0, 2.13, -8.215);
+  object.position.set(0, 2.13, -10.215);
   scene.add(object);
   object.name = "brain_obj";
   planeObjects = [];
@@ -3556,7 +3557,7 @@ function initBrainObj() {
     object.add(obj);
 
     // Set up clip plane rendering
-    var planeGeom = new THREE.PlaneGeometry(20, 20);
+    var planeGeom = new THREE.PlaneGeometry(40, 40);
 
     for (let i = 0; i < 3; i++) {
       var poGroup = new THREE.Group();
@@ -4557,7 +4558,7 @@ function display_region(RegionData) {
     let pointMat = new THREE.MeshBasicMaterial({
       color: d3.interpolateSinebow(idx),
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.5,
     });
     let point = new THREE.Mesh(pointGeom, pointMat);
     point.position.set(d.Coord[0], d.Coord[1], d.Coord[2]);
@@ -4568,7 +4569,7 @@ function display_region(RegionData) {
   // regiongroup.scale.set(0.039,0.039,0.038);
   // regiongroup.position.set(0,-0.7,0.7);
   regiongroup.scale.set(0.05, 0.048, 0.046);
-  regiongroup.position.set(0, 1.5, -7.5);
+  regiongroup.position.set(0, 1.5, -9.5);
   scene.add(regiongroup);
   regiongroup.name = "regiongroup";
 }
@@ -4617,7 +4618,7 @@ function display_region_colormap(RegionData) {
   // regiongroup.scale.set(0.039,0.039,0.038);
   // regiongroup.position.set(0,-0.7,0.7);
   regiongroup.scale.set(0.05, 0.048, 0.046);
-  regiongroup.position.set(0, 1.5, -7.5);
+  regiongroup.position.set(0, 1.5, -9.5);
   scene.add(regiongroup);
   regiongroup.name = "regiongroup";
 
@@ -4687,7 +4688,7 @@ function makeplaymenu() {
     width: PLAYERPANELMAXWIDTH,
   });
 
-  playMenuContainer.position.set(0, -3, -8);
+  playMenuContainer.position.set(0, -3, -10);
   playMenuContainer.scale.set(2.15, 3, 2.15);
   scene.add(playMenuContainer);
 
@@ -5215,6 +5216,7 @@ function makeplaymenu() {
       document.removeEventListener("click", clickhighlightmesh, false);
       document.removeEventListener("click", clickhighlightmeshgroup, false);
       initBrainObj();
+      
     },
   });
   button2.setupState(hoveredStateAttributes);
@@ -5345,7 +5347,7 @@ function makeplaymenu() {
         pointGroup.rotation.y = Math.PI;
         // pointGroup.scale.set(0.04,0.04,0.04);
         // pointGroup.position.set(0,-0.7,0.7);
-        pointGroup.position.set(0, 1.5, -7.5);
+        pointGroup.position.set(0, 1.5, -9.5);
         pointGroup.scale.set(0.05, 0.048, 0.046);
         scene.add(pointGroup);
         pointGroup.name = "key_point";
@@ -5481,7 +5483,7 @@ function draw_plane(timepoint, length) {
   });
   const plane = new THREE.Mesh(plane_geo, plane_mat);
   let x = 5 + (10 / 165) * timepoint;
-  plane.position.set(x, -5, -7 - length / 6);
+  plane.position.set(x, -3, -11 - length / 6);
   plane.rotation.y = Math.PI / 2;
   plane.visible = true;
   return plane;
@@ -5628,7 +5630,7 @@ function time_sum_bold(data) {
   const clippedColorFront = new THREE.Mesh(geometry2, cubeMaterial);
   clippedColorFront.scale.set(0.01075, 0.01075, 0.01075);
   clippedColorFront.rotation.set(0, Math.PI, Math.PI);
-  clippedColorFront.position.set(0, -1, -8);
+  clippedColorFront.position.set(0, -1, -10);
   clippedColorFront.translateX(-3.55);
   clippedColorFront.castShadow = true;
   clippedColorFront.renderOrder = 6;

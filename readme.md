@@ -5,7 +5,7 @@ Download [nvm](https://github.com/coreybutler/nvm-windows/releases).  <br>
 
 列出可安装的 node 版本:  
 ``` bash
-nvm list available   <br>
+nvm list available
 ```
 
 安装指定的版本，建议使用最新的LTS（长期服务）版本:
